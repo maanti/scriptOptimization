@@ -1,77 +1,96 @@
 <!DOCTYPE html>
 <html>
-    <head>
-        <meta charset="utf-8">
-        <title>Тестовое задание</title>
-    </head>
-    <body>
-        <style>
-            html, body {
-                overflow: hidden;
-                width: 100%;
-                height: 100%;
-            }
-            
-            body {
-                background: #efefef;
-            }
-            
-            .circle {
-                background: #444;
-                position: absolute;
-                width: 40px;
-                height: 40px;
-                border-radius: 100px;
-            }
-            
-            .circle-shadow {
-                background: #ddd;
-                position: absolute;
-                width: 40px;
-                height: 40px;
-                border-radius: 100px;
-            }
-            
-            .transition {
-                transition: all .3s;
-            }
+<head>
+    <meta charset="utf-8" />
+    <title>Тестовое задание</title>
+    <style>
+        html, body {
+            overflow: hidden;
+            width: 100%;
+            height: 100%;
+        }
 
-        </style>
-        
-        <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
-        <script>
-			// Оптимизируйте и приведите код в порядок
-            
-            for (var x=0; x<$("body").width(); x+=60) {for (var y=0; y<$("body").height(); y+=60) {
-            $("body").append("<div class='circle-shadow' data-x='"+x+"' data-y='"+y+"' style='top:"+y+"px;left:"+x+"px'></div>");
-            $("body").append("<div class='circle' data-x='"+x+"' data-y='"+y+"' style='top:"+y+"px;left:"+x+"px'></div>");
-            }}
-            
-            try {
-                $(window).on("mousemove",function(document){
-                $(".circle").each(function(i){
-                var x0=+$(".circle:eq("+i+")").data("x")+$(".circle:eq("+i+")").width()/2,
-                y0=+$(".circle:eq("+i+")").data("y")+$(".circle:eq("+i+")").width()/2,
-                dx=document.clientX-x0,
-                dy=document.clientY-y0;
-                $(".circle:eq("+i+")").removeClass("transition");
-                return setTimeout(function() {return Math.sqrt(dx*dx+dy*dy)<$(".circle:eq("+i+")").width()?(function(){
-                $(".circle:eq("+i+")").css({
-                left:x0-dx-$(".circle:eq("+i+")").width()/2+"px",
-                top:y0-dy-$(".circle:eq("+i+")").width()/2+"px"
-                });
-                })():(function(){$(".circle:eq("+i+")").addClass("transition");
-                $(".circle:eq("+i+")").css({
-                left:x0-$(".circle:eq("+i+")").width()/2+"px",
-                top:y0-$(".circle:eq("+i+")").width()/2+"px"
-                });
-                })();}, i);
-                });
-                });
-            } catch(window) {if (window) {alert(window);}
-            }
+        body {
+            background: #efefef;
+        }
 
-        </script>
-    </body>
+        .circle {
+            background: #444;
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-radius: 100px;
+        }
+
+        .circle-shadow {
+            background: #ddd;
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            border-radius: 100px;
+        }
+
+        .transition {
+            transition: all .3s;
+        }
+    </style>
+</head>
+<body>
+<script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+<script>
+  // Оптимизируйте и приведите код в порядок
+  const body = $('body');
+  let parentDiv = document.createElement('div');
+  const divPattern = document.createElement('div');
+  divPattern.className = 'circle-shadow';
+  for (let x = 0; x < body.width(); x += 60) {
+    for (let y = 0; y < body.height(); y += 60) {
+      const div1 = divPattern.cloneNode(true);
+      div1.setAttribute('data-x', x);
+      div1.setAttribute('data-y', y);
+      div1.setAttribute('style', 'top:' + y + 'px;left:' + x + 'px');
+      const div2 = div1.cloneNode(true);
+      div2.setAttribute('data-x', x);
+      div2.setAttribute('data-y', y);
+      div2.setAttribute('style', 'top:' + y + 'px;left:' + x + 'px');
+      div2.className = 'circle';
+      parentDiv.append(div1);
+      parentDiv.append(div2);
+    }
+  }
+  body.append(parentDiv);
+  let circles = [];
+  $('.circle').each(function(i) {
+    const circle = $('.circle:eq(' + i + ')');
+    circle.x = +circle.data('x') + circle.width() / 2;
+    circle.y = +circle.data('y') + circle.width() / 2;
+    circles.push(circle);
+  });
+
+  $(window).on('mousemove', document => {
+    for (let i = 0; i < circles.length; i++) {
+      const dx = document.clientX - circles[i].x,
+        dy = document.clientY - circles[i].y;
+      circles[i].removeClass('transition');
+      if (
+        Math.abs(dx) <= 60 &&
+        Math.abs(dy) <= 60 &&
+        Math.sqrt(dx * dx + dy * dy) < circles[i].width()
+      ) {
+        circles[i].css({
+          left: circles[i].x - dx - circles[i].width() / 2 + 'px',
+          top: circles[i].y - dy - circles[i].width() / 2 + 'px'
+        });
+      } else {
+        circles[i].addClass('transition');
+        circles[i].css({
+          left: circles[i].x - circles[i].width() / 2 + 'px',
+          top: circles[i].y - circles[i].width() / 2 + 'px'
+        });
+      }
+    }
+  });
+
+</script>
+</body>
 </html>
-
