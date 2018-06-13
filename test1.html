@@ -38,67 +38,65 @@
 <body>
 <script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
 <script>
-  const body = $('body');
-  let parentDiv = document.createElement('div');
+ const body = $("body");
+let parentDiv = document.createElement("div");
 
-  const divPattern = document.createElement('div');
-  divPattern.className = 'circle-shadow';
+const divPattern = document.createElement("div");
+divPattern.className = "circle-shadow";
 
-  for (let x = 0; x < body.width(); x += 60) {
-    for (let y = 0; y < body.height(); y += 60) {
-      const div1 = divPattern.cloneNode(true);
-      div1.setAttribute('data-x', x);
-      div1.setAttribute('data-y', y);
-      div1.setAttribute('style', 'top:' + y + 'px;left:' + x + 'px');
-      const div2 = div1.cloneNode(true);
-      div2.setAttribute('data-x', x);
-      div2.setAttribute('data-y', y);
-      div2.setAttribute('style', 'top:' + y + 'px;left:' + x + 'px');
-      div2.className = 'circle';
-      parentDiv.append(div1);
-      parentDiv.append(div2);
+for (let x = 0; x < body.width(); x += 60) {
+  for (let y = 0; y < body.height(); y += 60) {
+    const div1 = divPattern.cloneNode(true);
+    div1.setAttribute("data-x", x);
+    div1.setAttribute("data-y", y);
+    div1.setAttribute("style", "top:" + y + "px;left:" + x + "px");
+    const div2 = div1.cloneNode(true);
+    div2.setAttribute("data-x", x);
+    div2.setAttribute("data-y", y);
+    div2.setAttribute("style", "top:" + y + "px;left:" + x + "px");
+    div2.className = "circle";
+    parentDiv.append(div1);
+    parentDiv.append(div2);
+  }
+}
+body.append(parentDiv);
+
+let circles = [];
+$(".circle").each(function(i) {
+  const circle = $(".circle:eq(" + i + ")");
+  circle.x = +circle.data("x") + circle.width() / 2;
+  circle.y = +circle.data("y") + circle.width() / 2;
+  circles.push(circle);
+});
+
+const halfWidth = circles[0].width() / 2;
+
+$(window).on("mousemove", document => {
+  if (typeof movewait !== "undefined") {
+    clearTimeout(movewait);
+  }
+  for (let i = 0; i < circles.length; i++) {
+    const dx = document.clientX - circles[i].x,
+      dy = document.clientY - circles[i].y;
+    circles[i].removeClass("transition");
+    if (
+      Math.abs(dx) <= 60 &&
+      Math.abs(dy) <= 60 &&
+      Math.sqrt(dx * dx + dy * dy) < halfWidth * 2
+    ) {
+      circles[i].css({
+        left: circles[i].x - dx - halfWidth + "px",
+        top: circles[i].y - dy - halfWidth + "px"
+      });
+    } else {
+      circles[i].addClass("transition");
+      circles[i].css({
+        left: circles[i].x - halfWidth + "px",
+        top: circles[i].y - halfWidth + "px"
+      });
     }
   }
-  body.append(parentDiv);
-
-  let circles = [];
-  $('.circle').each(function(i) {
-    const circle = $('.circle:eq(' + i + ')');
-    circle.x = +circle.data('x') + circle.width() / 2;
-    circle.y = +circle.data('y') + circle.width() / 2;
-    circles.push(circle);
-  });
-
-  const halfWidth = circles[0].width() / 2;
-
-  $(window).on('mousemove', document => {
-    if (typeof movewait !== 'undefined') {
-      clearTimeout(movewait);
-    }
-    movewait = setTimeout(() => {
-      for (let i = 0; i < circles.length; i++) {
-        const dx = document.clientX - circles[i].x,
-          dy = document.clientY - circles[i].y;
-        circles[i].removeClass('transition');
-        if (
-          Math.abs(dx) <= 60 &&
-          Math.abs(dy) <= 60 &&
-          Math.sqrt(dx * dx + dy * dy) < halfWidth * 2
-        ) {
-          circles[i].css({
-            left: circles[i].x - dx - halfWidth + 'px',
-            top: circles[i].y - dy - halfWidth + 'px'
-          });
-        } else {
-          circles[i].addClass('transition');
-          circles[i].css({
-            left: circles[i].x - halfWidth + 'px',
-            top: circles[i].y - halfWidth + 'px'
-          });
-        }
-      }
-    }, 10);
-  });
+});
 </script>
 </body>
 </html>
